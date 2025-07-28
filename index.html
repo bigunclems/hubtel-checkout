@@ -3,49 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Payment - Big Uncle Technologies</title>
+  <title>Secure Checkout | Big Uncle Technologies</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      background-color: #f4f4f4;
-      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f7fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
     }
-    .container {
-      max-width: 400px;
-      margin: auto;
+
+    .card {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
     }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    p {
+      margin-bottom: 2rem;
+      color: #555;
+    }
+
     button {
-      background-color: #0070f3;
+      background-color: #007aff;
       color: white;
-      padding: 12px 24px;
-      font-size: 16px;
+      padding: 0.8rem 1.5rem;
       border: none;
       border-radius: 8px;
+      font-size: 1rem;
       cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
     }
+
     button:hover {
-      background-color: #0051a8;
+      background-color: #005ecb;
+    }
+
+    .support {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .support a {
+      color: #007aff;
+      text-decoration: none;
+    }
+
+    .support a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Pay for Your Service</h2>
-    <p>You're about to pay securely with Hubtel.</p>
-    
-    <!-- Replace this URL when Hubtel gives you a real payment link -->
-    <button onclick="window.location.href='https://hubtel.com/pay/pay.bigunclems.com'">
+  <div class="card">
+    <h1>Secure Checkout</h1>
+    <p>Click the button below to complete your payment.</p>
+    <button onclick="window.location.href='https://pay.hubtel.com/JXHeL9q8fA'">
       Pay with Hubtel
     </button>
 
-    <p style="margin-top:20px;">
-      Having trouble? <a href="https://wa.me/233543899498">Chat with Support</a>
-    </p>
+    <div class="support">
+      <p>Need help? <a href="https://wa.me/233543899498">Chat with Support</a></p>
+    </div>
   </div>
 </body>
 </html>
