@@ -37,19 +37,9 @@
       color: #555;
     }
 
-    button {
-      background-color: #007aff;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-    }
-
-    button:hover {
-      background-color: #005ecb;
+    .loading {
+      font-style: italic;
+      color: #999;
     }
 
     .support {
@@ -66,14 +56,28 @@
       text-decoration: underline;
     }
   </style>
+
+  <script>
+    window.onload = function () {
+      const params = new URLSearchParams(window.location.search);
+      const plan = params.get("plan");
+
+      if (plan) {
+        const redirectUrl = `https://checkout.biguncletech.com/?plan=${plan}`;
+        document.getElementById("status").innerText = "Redirecting to checkout...";
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 1000);
+      } else {
+        document.getElementById("status").innerText = "No plan selected. Please return to the main site.";
+      }
+    };
+  </script>
 </head>
 <body>
   <div class="card">
     <h1>Secure Checkout</h1>
-    <p>Click the button below to complete your payment.</p>
-    <button onclick="window.location.href='https://pay.hubtel.com/JXHeL9q8fA'">
-      Pay with Hubtel
-    </button>
+    <p id="status" class="loading">Preparing your checkout session...</p>
 
     <div class="support">
       <p>Need help? <a href="https://wa.me/233543899498">Chat with Support</a></p>
