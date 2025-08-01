@@ -58,34 +58,49 @@
   </style>
 
   <script>
-  window.onload = function () {
-    const params = new URLSearchParams(window.location.search);
-    const plan = params.get("plan");
+    window.onload = async function () {
+      const params = new URLSearchParams(window.location.search);
+      const plan = params.get("plan");
 
-    // Replace these URLs with your real Hubtel payment links
-    const paymentLinks = {
-      "web-basic": "https://pay.hubtel.com/YOUR_WEB_BASIC_LINK",
-      "web-pro": "https://pay.hubtel.com/YOUR_WEB_PRO_LINK",
-      "web-elite": "https://pay.hubtel.com/YOUR_WEB_ELITE_LINK"
+      const status = document.getElementById("status");
+
+      if (!plan) {
+        status.innerText = "Invalid or missing plan. Please return to the main site.";
+        return;
+      }
+
+      status.innerText = "Connecting to secure payment...";
+
+      try {
+        const response = await fetch("https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ plan: plan })
+        });
+
+        const result = await response.json();
+
+        if (result && result.payment_url) {
+          status.innerText = "Redirecting to Hubtel...";
+          setTimeout(() => {
+            window.location.href = result.payment_url;
+          }, 1000);
+        } else {
+          status.innerText = "Failed to get payment link. Please try again.";
+        }
+      } catch (error) {
+        console.error("Payment error:", error);
+        status.innerText = "Payment error. Please try again or contact support.";
+      }
     };
-
-    if (plan && paymentLinks[plan]) {
-      document.getElementById("status").innerText = "Redirecting to secure payment...";
-      setTimeout(() => {
-        window.location.href = paymentLinks[plan];
-      }, 1000);
-    } else {
-      document.getElementById("status").innerText = "Invalid or missing plan. Please return to the main site.";
-    }
-  };
-</script>
-
+  </script>
 </head>
 <body>
   <div class="card">
     <h1>Secure Checkout</h1>
     <p id="status" class="loading">Preparing your checkout session...</p>
-
     <div class="support">
       <p>Need help? <a href="https://wa.me/233543899498">Chat with Support</a></p>
     </div>
