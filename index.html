@@ -77,9 +77,9 @@
       const status = document.getElementById("status");
 
       const PLAN_MAP = {
-        "web-basic": { amount: 100, plan_name: "Web Basic" },
-        "web-pro": { amount: 200, plan_name: "Web Pro" },
-        "web-premium": { amount: 300, plan_name: "Web Premium" }
+        "web-basic": { amount: 200, plan_name: "Web Basic" },
+        "web-pro": { amount: 500, plan_name: "Web Pro" },
+        "web-enterprise": { amount: 0, plan_name: "Enterprise (Custom)" }
       };
 
       if (!plan || !PLAN_MAP[plan]) {
@@ -88,11 +88,20 @@
         return;
       }
 
+      // If Enterprise plan, redirect to contact support
+      if (plan === "web-enterprise") {
+        status.innerText = "Please contact us for a custom quote...";
+        setTimeout(() => {
+          window.location.href = "https://wa.me/233543899498?text=Hello%2C%20I%27m%20interested%20in%20a%20custom%20Enterprise%20website%20package.";
+        }, 1500);
+        return;
+      }
+
       const payload = {
         amount: PLAN_MAP[plan].amount,
         plan_name: PLAN_MAP[plan].plan_name,
-        customer_email: "someone@example.com",  // Replace later with actual user input
-        customer_phone: "233543899498",         // Replace with dynamic or logged-in user
+        customer_email: "someone@example.com",  // Optional: Replace with dynamic input
+        customer_phone: "233543899498",         // Optional: Replace with dynamic input
         return_url: "https://checkout.biguncletech.com/result",
         callback_url: "https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-payment"
       };
