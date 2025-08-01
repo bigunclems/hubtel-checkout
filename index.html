@@ -14,10 +14,18 @@
     .error { color: red; }
     .warning { color: orange; }
     h3 { margin-top: 0; }
+    .api-key-section { background-color: #fff3cd; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
   <h1>Hubtel Payment Debug</h1>
+  
+  <div class="api-key-section">
+    <h3>API Configuration</h3>
+    <p>Enter your Supabase anon key to authenticate requests:</p>
+    <input type="text" id="api-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." value="">
+    <p><small>Note: Your anon key can be found in your Supabase dashboard under Project Settings > API</small></p>
+  </div>
   
   <div class="section">
     <h3>1. Check Edge Function Connectivity</h3>
@@ -53,6 +61,9 @@
   </div>
   
   <script>
+    // Constants
+    const SUPABASE_URL = 'https://aubpfeohfhuitytohjyu.supabase.co';
+    
     // Helper function for logging
     function logMessage(element, message, type = 'info') {
       const timestamp = new Date().toLocaleTimeString();
@@ -71,6 +82,41 @@
       element.appendChild(pre);
     }
     
+    // Helper function to get API key
+    function getApiKey() {
+      const apiKey = document.getElementById('api-key').value.trim();
+      if (!apiKey) {
+        throw new Error('Please enter your Supabase anon key');
+      }
+      return apiKey;
+    }
+    
+    // Helper function to call Edge Functions with authentication
+    async function callEdgeFunction(functionName, options = {}) {
+      try {
+        const apiKey = getApiKey();
+        
+        const url = `${SUPABASE_URL}/functions/v1/${functionName}${options.queryParams || ''}`;
+        const headers = {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        };
+        
+        const fetchOptions = {
+          method: options.method || 'GET',
+          headers: headers
+        };
+        
+        if (options.body) {
+          fetchOptions.body = JSON.stringify(options.body);
+        }
+        
+        return fetch(url, fetchOptions);
+      } catch (error) {
+        throw error;
+      }
+    }
+    
     // Test debug function
     document.getElementById('test-debug').addEventListener('click', async () => {
       const debugLog = document.getElementById('debug-log');
@@ -79,7 +125,7 @@
       logMessage(debugLog, 'Testing connection to hubtel-debug function...');
       
       try {
-        const response = await fetch('https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-debug');
+        const response = await callEdgeFunction('hubtel-debug');
         
         logMessage(debugLog, `Response status: ${response.status}`, response.ok ? 'success' : 'error');
         
@@ -106,7 +152,9 @@
       logMessage(planLog, `Checking plan data for: ${planSlug}`);
       
       try {
-        const response = await fetch(`https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-debug?plan=${planSlug}`);
+        const response = await callEdgeFunction('hubtel-debug', {
+          queryParams: `?plan=${encodeURIComponent(planSlug)}`
+        });
         
         logMessage(planLog, `Response status: ${response.status}`, response.ok ? 'success' : 'error');
         
@@ -137,23 +185,19 @@
       logMessage(paymentLog, `Testing payment initialization for ${plan} with ${email}`);
       
       try {
-        // First try the hubtel-payment-proxy function
+        // Call the hubtel-payment-proxy function with authentication
         logMessage(paymentLog, 'Calling hubtel-payment-proxy Edge Function...');
         
-        const paymentResponse = await fetch(
-          'https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-payment-proxy',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              planSlug: plan,
-              customerEmail: email,
-              customerPhone: phone,
-              returnUrl: 'https://checkout.biguncletech.com/result',
-              callbackUrl: 'https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-callback'
-            })
+        const paymentResponse = await callEdgeFunction('hubtel-payment-proxy', {
+          method: 'POST',
+          body: {
+            planSlug: plan,
+            customerEmail: email,
+            customerPhone: phone,
+            returnUrl: 'https://checkout.biguncletech.com/result',
+            callbackUrl: `${SUPABASE_URL}/functions/v1/hubtel-callback`
           }
-        );
+        });
         
         logMessage(paymentLog, `Edge Function response status: ${paymentResponse.status}`, 
                   paymentResponse.ok ? 'success' : 'error');
@@ -169,6 +213,14 @@
             
             if (paymentResponse.ok && result.checkoutUrl) {
               logMessage(paymentLog, `Success! Checkout URL: ${result.checkoutUrl}`, 'success');
+              
+              // Add a button to open the payment URL
+              const payButton = document.createElement('button');
+              payButton.textContent = 'Open Payment Page';
+              payButton.onclick = function() {
+                window.open(result.checkoutUrl, '_blank');
+              };
+              paymentLog.appendChild(payButton);
             }
           } catch (parseError) {
             logMessage(paymentLog, `Failed to parse response as JSON: ${parseError.message}`, 'error');
