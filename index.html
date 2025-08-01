@@ -58,21 +58,28 @@
   </style>
 
   <script>
-    window.onload = function () {
-      const params = new URLSearchParams(window.location.search);
-      const plan = params.get("plan");
+  window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+    const plan = params.get("plan");
 
-      if (plan) {
-        const redirectUrl = `https://checkout.biguncletech.com/?plan=${plan}`;
-        document.getElementById("status").innerText = "Redirecting to checkout...";
-        setTimeout(() => {
-          window.location.href = redirectUrl;
-        }, 1000);
-      } else {
-        document.getElementById("status").innerText = "No plan selected. Please return to the main site.";
-      }
+    // Replace these URLs with your real Hubtel payment links
+    const paymentLinks = {
+      "web-basic": "https://pay.hubtel.com/YOUR_WEB_BASIC_LINK",
+      "web-pro": "https://pay.hubtel.com/YOUR_WEB_PRO_LINK",
+      "web-elite": "https://pay.hubtel.com/YOUR_WEB_ELITE_LINK"
     };
-  </script>
+
+    if (plan && paymentLinks[plan]) {
+      document.getElementById("status").innerText = "Redirecting to secure payment...";
+      setTimeout(() => {
+        window.location.href = paymentLinks[plan];
+      }, 1000);
+    } else {
+      document.getElementById("status").innerText = "Invalid or missing plan. Please return to the main site.";
+    }
+  };
+</script>
+
 </head>
 <body>
   <div class="card">
