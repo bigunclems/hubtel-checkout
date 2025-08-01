@@ -6,45 +6,58 @@
   <title>Secure Checkout | Big Uncle Technologies</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f7fa;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f8fc;
       display: flex;
-      flex-direction: column;
       align-items: centre;
       justify-content: centre;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
     }
 
     .card {
       background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      border-radius: 16px;
+      padding: 3rem 2rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
       text-align: centre;
-      max-width: 400px;
-      width: 90%;
+      width: 100%;
+      max-width: 420px;
     }
 
     h1 {
+      color: #1a202c;
       margin-bottom: 1rem;
-      font-size: 1.5rem;
-      color: #333;
+      font-size: 1.8rem;
     }
 
-    p {
+    #status {
+      font-size: 1rem;
+      color: #4a5568;
       margin-bottom: 2rem;
-      color: #555;
     }
 
-    .loading {
-      font-style: italic;
-      color: #999;
+    .spinner {
+      border: 4px solid #eee;
+      border-top: 4px solid #007aff;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 1rem auto;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .support {
-      margin-top: 2rem;
       font-size: 0.9rem;
+      color: #666;
+      margin-top: 1rem;
     }
 
     .support a {
@@ -61,15 +74,15 @@
     window.onload = async function () {
       const params = new URLSearchParams(window.location.search);
       const plan = params.get("plan");
-
       const status = document.getElementById("status");
 
       if (!plan) {
-        status.innerText = "Invalid or missing plan. Please return to the main site.";
+        status.innerText = "Missing or invalid plan. Please go back and choose a valid package.";
+        document.querySelector(".spinner").style.display = "none";
         return;
       }
 
-      status.innerText = "Connecting to secure payment...";
+      status.innerText = "Connecting to secure Hubtel checkout...";
 
       try {
         const response = await fetch("https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-payment", {
@@ -88,21 +101,24 @@
             window.location.href = result.payment_url;
           }, 1000);
         } else {
-          status.innerText = "Failed to get payment link. Please try again.";
+          document.querySelector(".spinner").style.display = "none";
+          status.innerText = result.message || "Failed to retrieve payment link. Please try again.";
         }
       } catch (error) {
         console.error("Payment error:", error);
-        status.innerText = "Payment error. Please try again or contact support.";
+        document.querySelector(".spinner").style.display = "none";
+        status.innerText = "An error occurred. Please refresh or contact support.";
       }
     };
   </script>
 </head>
 <body>
   <div class="card">
+    <div class="spinner"></div>
     <h1>Secure Checkout</h1>
-    <p id="status" class="loading">Preparing your checkout session...</p>
+    <p id="status">Preparing your checkout session...</p>
     <div class="support">
-      <p>Need help? <a href="https://wa.me/233543899498">Chat with Support</a></p>
+      Need help? <a href="https://wa.me/233543899498" target="_blank">Contact Support</a>
     </div>
   </div>
 </body>
