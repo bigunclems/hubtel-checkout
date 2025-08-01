@@ -1,294 +1,589 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang=
+"en"
+>
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Checkout | Big Uncle Technologies</title>
+
+  <meta charset=
+"UTF-8"
+>
+
+  <meta name=
+"viewport"
+ content=
+"width=device-width, initial-scale=1.0"
+>
+
+  <title>Debug Checkout</title>
+
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f8fc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 3rem 2rem;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-      text-align: center;
-      width: 100%;
-      max-width: 420px;
-    }
-    h1 {
-      color: #1a202c;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
-    #status {
-      font-size: 1rem;
-      color: #4a5568;
-      margin-bottom: 2rem;
-    }
-    .spinner {
-      border: 4px solid #eee;
-      border-top: 4px solid #007aff;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      margin: 0 auto 1rem auto;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .support {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 1rem;
-    }
-    .support a {
-      color: #007aff;
-      text-decoration: none;
-    }
-    .support a:hover {
-      text-decoration: underline;
-    }
-    .error {
-      color: #e53e3e;
-      margin-top: 1rem;
-      padding: 1rem;
-      background: #fff5f5;
-      border-radius: 8px;
-      text-align: left;
-      font-size: 0.9rem;
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-    form {
-      margin: 20px 0;
-      text-align: left;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-bottom: 15px;
-      font-size: 16px;
-    }
-    button {
-      background: #007aff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 12px;
-      width: 100%;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 500;
-    }
-    button:disabled {
-      background: #cccccc;
-      cursor: not-allowed;
-    }
-    .plan-details {
-      background: #f8fafc;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
-      text-align: left;
-    }
-    .plan-name {
-      font-weight: bold;
-      font-size: 18px;
-      margin-bottom: 5px;
-    }
-    .plan-price {
-      font-size: 24px;
-      color: #007aff;
-      margin-bottom: 10px;
-    }
-    .plan-description {
-      color: #64748b;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
+
+    body { font-family: Arial, sans-serif; max-width: 
+600
+px; margin: 
+40
+px auto; padding: 
+20
+px; }
+
+    .debug { background: 
+#f0f0f0; padding: 10px; border-radius: 4px; white-space: pre-wrap; margin: 10px 0; }
+
+
+    button { padding: 
+10
+px 
+15
+px; background: 
+#4CAF50; color: white; border: none; cursor: pointer; }
+
+
+    input { padding: 
+8
+px; margin: 
+5
+px 
+0
+ 
+15
+px; width: 
+100
+%; }
+
   </style>
+
 </head>
+
 <body>
-  <div class="card">
-    <div class="spinner" id="spinner"></div>
-    <h1>Secure Checkout</h1>
-    <p id="status">Preparing your checkout session...</p>
-    <div id="checkout-form" style="display: none;">
-      <!-- Form will be inserted here -->
-    </div>
-    <div class="support">
-      Need help? <a href="https://wa.me/233543899498" target="_blank">Contact Support</a>
-    </div>
+
+  <h1>Debug Checkout</h1>
+
+  <div id=
+"log"
+ 
+class
+=
+"debug"
+>Loading...</div>
+
+  <div id=
+"form-container"
+ style=
+"display:none;"
+>
+
+    <h2>Enter Payment Details</h2>
+
+    <form id=
+"payment-form"
+>
+
+      <label 
+for
+=
+"email"
+>Email:</label>
+
+      <input type=
+"email"
+ id=
+"email"
+ required 
+value
+=
+"test@example.com"
+>
+
+      <label 
+for
+=
+"phone"
+>Phone:</label>
+
+      <input type=
+"tel"
+ id=
+"phone"
+ required 
+value
+=
+"233543899498"
+>
+
+      <button type=
+"submit"
+>Process Payment</button>
+
+    </form>
+
   </div>
 
+  <div id=
+"error-container"
+ style=
+"display:none; color:red; margin-top:20px;"
+></div>
+
   <script>
-    // Get plan slug from URL
-    const params = new URLSearchParams(window.location.search);
-    const planSlug = params.get("plan");
+
     
-    // Elements
-    const spinner = document.getElementById("spinner");
-    const status = document.getElementById("status");
-    const checkoutForm = document.getElementById("checkout-form");
+// Debug logger
+
+
     
-    // Function to show error
-    function showError(message, details = null) {
-      spinner.style.display = "none";
-      status.innerText = message || "An error occurred";
+const
+ log = document.getElementById(
+'log'
+);
+
+    
+const
+ formContainer = document.getElementById(
+'form-container'
+);
+
+    
+const
+ errorContainer = document.getElementById(
+'error-container'
+);
+
+    
+function 
+addLog
+(
+message
+)
+ {
+
       
-      if (details) {
-        const errorDiv = document.createElement("div");
-        errorDiv.className = "error";
-        errorDiv.textContent = typeof details === 'object' ? JSON.stringify(details, null, 2) : details.toString();
-        document.querySelector(".card").appendChild(errorDiv);
-      }
+const
+ timestamp = 
+new
+ Date().toLocaleTimeString();
+
+      log.textContent += `\n[${timestamp}] ${message}`;
+
+      log.scrollTop = log.scrollHeight;
+
+      console.log(`[${timestamp}] ${message}`);
+
     }
+
     
-    // Function to load plan details
-    async function loadPlan() {
-      if (!planSlug) {
-        showError("No plan selected. Please go back and try again.");
-        return;
-      }
+function 
+showError
+(
+message, details
+)
+ {
+
+      errorContainer.style.display = 
+'block'
+;
+
+      errorContainer.innerHTML = `<h3>Error</h3><p>${message}</p>`;
+
       
-      try {
-        // Hardcoded plan data for web-basic (fallback if API call fails)
-        const defaultPlan = {
-          name: "Web Basic",
-          amount: 1500,
-          currency: "GHS",
-          description: "Basic website package"
-        };
+if
+ (details) {
+
         
-        // Try to fetch plan data from API
-        let planData;
-        try {
-          const response = await fetch(`https://aubpfeohfhuitytohjyu.supabase.co/rest/v1/pricing_plans?slug=eq.${planSlug}&select=*`, {
+const
+ detailsElement = document.createElement(
+'pre'
+);
+
+        detailsElement.textContent = 
+typeof
+ details === 
+'object'
+ ? JSON.stringify(details, 
+null
+, 
+2
+) : details;
+
+        errorContainer.appendChild(detailsElement);
+
+      }
+
+      addLog(`ERROR: ${message}`);
+
+    }
+
+    
+// Get URL parameters
+
+
+    
+const
+ 
+params
+ = 
+new
+ URLSearchParams(window.location.search);
+
+    
+const
+ planSlug = 
+params
+.
+get
+(
+'plan'
+) || 
+'web-basic'
+;
+
+    addLog(`Starting checkout 
+for
+ plan: ${planSlug}`);
+
+    
+// Hard-coded plan data as fallback
+
+
+    
+const
+ fallbackPlan = {
+
+      name: 
+"Web Basic Plan"
+,
+
+      amount: 
+1500
+,
+
+      currency: 
+"GHS"
+,
+
+      description: 
+"Basic website package"
+
+
+    };
+
+    
+//Initialise checkout
+
+
+    
+async
+ function 
+initCheckout
+(
+)
+ {
+
+      
+try
+ {
+
+        addLog(
+'Fetching plan data...'
+);
+
+        
+// Try to get plan data from API
+
+
+        
+let
+ planData;
+
+        
+try
+ {
+
+          
+const
+ response = 
+await
+ fetch(`https:
+//aubpfeohfhuitytohjyu.supabase.co/rest/v1/pricing_plans?slug=eq.${planSlug}&select=*`, {
+
+
             headers: {
-              'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YnBmZW9oZmh1aXR5dG9oanl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMDc0MjgsImV4cCI6MjA2ODU4MzQyOH0.XYtk6yRoju-on48lWaudptFNyw7Or4IaGkAQY15jwzo'
+
+              
+'apikey'
+: 
+'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF1YnBmZW9oZmh1aXR5dG9oanl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMwMDc0MjgsImV4cCI6MjA2ODU4MzQyOH0.XYtk6yRoju-on48lWaudptFNyw7Or4IaGkAQY15jwzo'
+
+
             }
+
           });
+
+          addLog(`API response status: ${response.status}`);
+
           
-          if (response.ok) {
-            const data = await response.json();
-            if (data && data.length > 0) {
-              planData = data[0];
-            } else {
-              throw new Error("Plan not found");
+if
+ (response.ok) {
+
+            
+const
+ data = 
+await
+ response.json();
+
+            addLog(`API returned data: ${JSON.stringify(data)}`);
+
+            
+if
+ (data && data.length > 
+0
+) {
+
+              planData = data[
+0
+];
+
+              addLog(`Using plan data 
+from
+ API: ${planData.name}, ${planData.currency} ${planData.amount}`);
+
+            } 
+else
+ {
+
+              
+throw
+ 
+new
+ Error(
+"Plan not found in API response"
+);
+
             }
-          } else {
-            throw new Error("Failed to fetch plan data");
+
+          } 
+else
+ {
+
+            
+const
+ errorText = 
+await
+ response.text();
+
+            
+throw
+ 
+new
+ Error(`
+API 
+error
+ (
+${response.status}
+): $
+{errorText}`);
+
           }
+
         } catch (err) {
-          console.warn("Failed to fetch plan data, using default:", err);
-          planData = defaultPlan;
+
+          addLog(`Failed to fetch plan data: ${err.message}`);
+
+          addLog(
+'Using fallback plan data'
+);
+
+          planData = fallbackPlan;
+
         }
+
         
-        // Hide spinner and update status
-        spinner.style.display = "none";
-        status.innerText = "Complete your purchase";
+// Show form
+
+
+        formContainer.style.display = 
+'block'
+;
+
+        addLog(
+'Checkout form ready'
+);
+
         
-        // Create checkout form
-        checkoutForm.innerHTML = `
-          <div class="plan-details">
-            <div class="plan-name">${planData.name}</div>
-            <div class="plan-price">${planData.currency} ${planData.amount.toFixed(2)}</div>
-            <div class="plan-description">${planData.description || ''}</div>
-          </div>
-          
-          <form id="payment-form">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" required placeholder="your@email.com">
-            
-            <label for="phone">Phone Number (with country code)</label>
-            <input type="tel" id="phone" required placeholder="e.g., 233543899498">
-            
-            <button type="submit" id="submit-btn">Proceed to Payment</button>
-          </form>
-        `;
-        
-        // Show the form
-        checkoutForm.style.display = "block";
-        
-        // Add form submission handler
-        document.getElementById("payment-form").addEventListener("submit", async (e) => {
+// Handle form submission
+
+
+        document.getElementById(
+'payment-form'
+).addEventListener(
+'submit'
+, 
+async
+ (e) => {
+
           e.preventDefault();
+
           
-          const submitBtn = document.getElementById("submit-btn");
-          const email = document.getElementById("email").value;
-          const phone = document.getElementById("phone").value;
+const
+ email = document.getElementById(
+'email'
+).
+value
+;
+
           
-          // Disable button and show loading state
-          submitBtn.disabled = true;
-          submitBtn.innerText = "Processing...";
-          spinner.style.display = "block";
-          status.innerText = "Connecting to secure payment gateway...";
+const
+ phone = document.getElementById(
+'phone'
+).
+value
+;
+
+          addLog(`Processing payment 
+for
+ ${email} / ${phone}`);
+
           
-          try {
-            // Call the Edge Function
-            const response = await fetch(
-              "https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-payment-proxy",
+try
+ {
+
+            addLog(
+'Calling hubtel-payment-proxy Edge Function...'
+);
+
+            
+const
+ paymentResponse = 
+await
+ fetch(
+
+              
+'https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-payment-proxy'
+,
+
               {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+
+                method: 
+'POST'
+,
+
+                headers: { 
+'Content-Type'
+: 
+'application/json'
+ },
+
                 body: JSON.stringify({
+
                   planSlug: planSlug,
+
                   customerEmail: email,
+
                   customerPhone: phone,
-                  returnUrl: "https://checkout.biguncletech.com/result",
-                  callbackUrl: "https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-callback"
+
+                  returnUrl: 
+'https://checkout.biguncletech.com/result'
+,
+
+                  callbackUrl: 
+'https://aubpfeohfhuitytohjyu.supabase.co/functions/v1/hubtel-callback'
+
+
                 })
+
               }
+
             );
+
+            addLog(`Edge Function response status: ${paymentResponse.status}`);
+
             
-            const result = await response.json();
+const
+ responseText = 
+await
+ paymentResponse.text();
+
+            addLog(`Edge Function raw response: ${responseText}`);
+
             
-            if (response.ok && result.checkoutUrl) {
-              status.innerText = "Redirecting to secure payment page...";
-              setTimeout(() => {
-                window.location.href = result.checkoutUrl;
-              }, 1000);
-            } else {
-              throw new Error(result.error || result.details || "Payment initialization failed");
+let
+ result;
+
+            
+try
+ {
+
+              result = JSON.parse(responseText);
+
+            } catch (parseError) {
+
+              
+throw
+ 
+new
+ Error(`Failed to parse response 
+as
+ JSON: ${parseError.message}`);
+
             }
+
+            
+if
+ (paymentResponse.ok && result.checkoutUrl) {
+
+              addLog(`Success! Redirecting to: ${result.checkoutUrl}`);
+
+              setTimeout(() => {
+
+                window.location.href = result.checkoutUrl;
+
+              }, 
+2000
+);
+
+            } 
+else
+ {
+
+              
+throw
+ 
+new
+ Error(result.error || result.details || 
+'Payment initialisation failed'
+);
+
+            }
+
           } catch (err) {
-            showError("Payment initialization failed", err);
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Try Again";
-            spinner.style.display = "none";
+
+            showError(
+'Payment processing failed'
+, err);
+
           }
+
         });
-        
+
       } catch (err) {
-        showError("Failed to load checkout page", err);
+
+        showError(
+'Checkout initialisation failed'
+, err);
+
       }
+
     }
+
     
-    // Start loading when the page is ready
-    document.addEventListener("DOMContentLoaded", loadPlan);
-    // Also try to load immediately in case DOMContentLoaded already fired
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      loadPlan();
-    }
+// Start the checkout process
+
+
+    initCheckout();
+
   </script>
+
 </body>
+
 </html>
